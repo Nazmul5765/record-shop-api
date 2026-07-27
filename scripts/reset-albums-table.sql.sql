@@ -1,0 +1,2 @@
+DELETE FROM Albums;
+DBCC CHECKIDENT ('Albums', RESEED, 0);
