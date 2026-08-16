@@ -26,6 +26,7 @@ namespace RecordShop
                 failureStatus: HealthStatus.Unhealthy, tags: new[] { "api", "albums" })
                 .AddCheck<DatabaseHealthCheck>("database_health_check",
                 failureStatus: HealthStatus.Unhealthy, tags: new[] { "database", "sql" });
+            builder.Configuration.AddUserSecrets<Program>();
 
             if (builder.Configuration.GetValue<bool>("UseInMemoryDatabase"))
             {
