@@ -35,8 +35,19 @@ namespace RecordShop
             }
             else
             {
+
                 builder.Services.AddDbContext<RecordShopDbContext>(options =>
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                {
+                    if (builder.Configuration["DatabaseProvider"] == "PostgreSQL")
+                    {
+                        options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));
+                    }
+                    else
+                    {
+                        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+                    }
+                });
             }
 
             var app = builder.Build();
