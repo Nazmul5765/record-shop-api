@@ -16,7 +16,7 @@ namespace RecordShop.Repositories
             return _recordShopDbContext.Albums; 
         }
 
-        public Album GetAlbumById(int id)
+        public Album? GetAlbumById(int id)
         {
             var album = _recordShopDbContext.Albums;
 
@@ -33,7 +33,7 @@ namespace RecordShop.Repositories
             return album;
         }
 
-        public Album UpdateAlbum(int id, Album updateAlbum)
+        public Album? UpdateAlbum(int id, Album updateAlbum)
         {
             var album = _recordShopDbContext.Albums;
 
@@ -56,7 +56,7 @@ namespace RecordShop.Repositories
             return existingAlbum;
         }
 
-        public Album DeleteAlbum(int id)
+        public Album? DeleteAlbum(int id)
         {
             var deleteAlbum = _recordShopDbContext.Albums.Find(id);
             
@@ -72,7 +72,7 @@ namespace RecordShop.Repositories
             return deleteAlbum;
         }
 
-        public Album GetAlbumByAlbumName(string albumName)
+        public Album? GetAlbumByAlbumName(string albumName)
         {
             var album = _recordShopDbContext.Albums;
 
