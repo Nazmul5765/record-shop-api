@@ -25,7 +25,7 @@ namespace RecordShop
             builder.Services.AddHealthChecks().AddCheck<ApiHealthCheck>("api_health_check",
                 failureStatus: HealthStatus.Unhealthy, tags: new[] { "api", "albums" })
                 .AddCheck<DatabaseHealthCheck>("database_health_check",
-                failureStatus: HealthStatus.Unhealthy, tags: new[] { "database", "sql" });
+                failureStatus: HealthStatus.Unhealthy, tags: new[] { "databases" });
             builder.Configuration.AddUserSecrets<Program>();
 
             if (builder.Configuration.GetValue<bool>("UseInMemoryDatabase"))
@@ -53,14 +53,8 @@ namespace RecordShop
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-              
-            }
             app.UseSwagger();
             app.UseSwaggerUI();
-
-            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
