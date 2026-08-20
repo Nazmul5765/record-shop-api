@@ -1,91 +1,130 @@
 # Record Shop API
 
-A RESTful ASP.NET Core Web API for managing a record shop database.
+The backend API for my full-stack Record Shop application.
 
-This project allows users to create, read, update, delete and filter albums stored in a SQL Server database.
+The application provides record inventory management, allowing users to browse, search, add, update and delete albums through the Blazor frontend.
 
-The application was built using layered architecture with Controllers, Services and Repositories, alongside Entity Framework Core and SQL Server.
+The API was built with ASP.NET Core using a layered Controller, Service and Repository architecture. Entity Framework Core is used for database access, with PostgreSQL used in production and SQL Server supported for local development.
+
+## Live Application
+
+**Frontend:** https://recordshop.nazmulhussain.co.uk
+
+The production API is hosted on Railway and connects to a PostgreSQL database hosted on Neon.
 
 ---
 
-# Features
+## Features
 
-## Core Features
+### Album Management
 
 - Get all albums
-- Get album by ID
+- Get an album by ID
 - Add new albums
-- Update album details
+- Update existing album details
 - Delete albums
 
-## Filtering Features
+### Searching and Filtering
 
-- Get albums by album title
-- Get albums by artist
-- Get albums by genre
-- Get albums by release year
+Albums can be searched or filtered by:
 
-## Health Checks
+- Title
+- Artist
+- Genre
+- Release year
 
-- API health check
-- Database connection health check
+### Health Checks
 
-## Error Handling
+The API includes health checks for:
 
-The API includes validation and error handling for invalid requests, missing data and missing resources.
+- API availability
+- Database connectivity
+
+These are exposed through the `/health` endpoint and are also used by Railway to verify that the deployed service is running correctly.
+
+### Error Handling
+
+The API handles invalid requests, missing data and resources that cannot be found, returning appropriate HTTP responses to the frontend.
 
 ---
 
-# Technologies Used
+## Technologies Used
 
 - C#
+- .NET 8
 - ASP.NET Core Web API
 - Entity Framework Core
+- PostgreSQL
 - SQL Server
-- Swagger/OpenAPI
+- Neon
+- Docker
+- Railway
+- Swagger / OpenAPI
 - NUnit
 - Moq
 - Shouldly
+- Git and GitHub
 
 ---
 
-# Architecture
+## Architecture
 
-The project follows a layered architecture:
+The application follows a layered architecture:
 
 ```text
-Controllers → Services → Repositories → Database
+Client
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository
+  ↓
+Entity Framework Core
+  ↓
+Database
 ```
 
-- Controllers handle HTTP requests and responses
-- Services contain business logic
-- Repositories handle database access
-- Entity Framework Core handles communication with SQL Server
+### Controllers
+
+Handle incoming HTTP requests and return API responses.
+
+### Services
+
+Contain application and business logic.
+
+### Repositories
+
+Handle database operations and isolate data access from the rest of the application.
+
+### Entity Framework Core
+
+Provides communication between the repository layer and the configured database.
 
 ---
 
-# API Endpoints
+## API Endpoints
 
-## Albums
-
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/Albums` | Get all albums |
-| GET | `/Albums/{id}` | Get album by ID |
-| POST | `/Albums` | Add a new album |
-| PUT | `/Albums/{id}` | Update an album |
-| DELETE | `/Albums/{id}` | Delete an album |
-
-## Filtering Endpoints
+### Albums
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/Albums/title/{title}` | Get album by title |
-| GET | `/Albums/artist/{artistName}` | Get albums by artist |
-| GET | `/Albums/genre/{genre}` | Get albums by genre |
-| GET | `/Albums/releaseYear/{releaseYear}` | Get albums by release year |
+| GET | `/api/albums` | Get all albums |
+| GET | `/api/albums/{id}` | Get an album by ID |
+| POST | `/api/albums` | Add a new album |
+| PUT | `/api/albums/{id}` | Update an album |
+| DELETE | `/api/albums/{id}` | Delete an album |
 
-## Health Check Endpoint
+### Filtering
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/albums/title/{title}` | Search by album title |
+| GET | `/api/albums/artist/{artistName}` | Get albums by artist |
+| GET | `/api/albums/genre/{genre}` | Get albums by genre |
+| GET | `/api/albums/releaseYear/{releaseYear}` | Get albums by release year |
+
+### Health Check
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -93,27 +132,77 @@ Controllers → Services → Repositories → Database
 
 ---
 
-# Running the Project
+## Database Configuration
 
-## Clone the Repository
+The application supports different database configurations depending on the environment.
 
-```bash
-git clone <your-github-repository-url>
+### Production
+
+The deployed API uses:
+
+```text
+Railway
+   ↓
+ASP.NET Core API
+   ↓
+Entity Framework Core
+   ↓
+PostgreSQL
+   ↓
+Neon
 ```
 
-## Navigate into the Project
+The PostgreSQL connection string is supplied through environment variables rather than being stored in the repository.
+
+### Local Development
+
+SQL Server can be used for local development.
+
+Connection strings are stored using .NET User Secrets so sensitive database credentials are not committed to GitHub.
+
+The application can also use an Entity Framework Core InMemory database when configured to do so.
+
+---
+
+## Running the Project Locally
+
+### 1. Clone the Repository
 
 ```bash
-cd RecordShop
+git clone https://github.com/Nazmul5765/Record-Shop.git
 ```
 
-## Apply Database Migrations
+### 2. Navigate to the Repository
 
 ```bash
-update-database
+cd Record-Shop
 ```
 
-## Run the Application
+### 3. Configure the Database
+
+Provide the required database connection string using .NET User Secrets or your local configuration.
+
+For SQL Server, the application uses:
+
+```text
+ConnectionStrings:DefaultConnection
+```
+
+### 4. Apply Database Migrations
+
+Using the Package Manager Console:
+
+```powershell
+Update-Database
+```
+
+Or using the .NET CLI:
+
+```bash
+dotnet ef database update
+```
+
+### 5. Run the API
 
 ```bash
 dotnet run
@@ -121,33 +210,57 @@ dotnet run
 
 ---
 
-# Swagger
+## Docker
 
-Swagger UI is enabled for testing API endpoints.
+The API is containerised using Docker for deployment.
 
-Example:
+The Docker image:
+
+1. Restores the project dependencies
+2. Publishes the ASP.NET Core application
+3. Runs the published application using the .NET 8 ASP.NET runtime
+4. Binds to the port supplied by the hosting environment
+
+Railway builds and deploys the application from the GitHub repository.
+
+---
+
+## Swagger
+
+Swagger / OpenAPI is enabled for exploring and testing the API endpoints.
+
+When running locally, Swagger can be accessed at:
 
 ```text
-https://localhost:xxxx/swagger
+https://localhost:<port>/swagger
 ```
 
 ---
 
-# Testing
+## Testing
 
-The project includes unit tests for:
+The project contains automated tests across the application layers.
 
-- Repository layer
-- Service layer
-- Controller layer
+### Repository Tests
 
-Testing tools used:
+Test database access and repository behaviour using an Entity Framework Core InMemory database.
+
+### Service Tests
+
+Use Moq to isolate repository dependencies and test service behaviour.
+
+### Controller Tests
+
+Verify controller responses for successful requests, invalid requests and resources that cannot be found.
+
+### Testing Tools
 
 - NUnit
 - Moq
 - Shouldly
+- Entity Framework Core InMemory
 
-Run tests with:
+Run the test suite with:
 
 ```bash
 dotnet test
@@ -155,19 +268,36 @@ dotnet test
 
 ---
 
-# Future Improvements
+## Frontend
 
-Possible future improvements include:
+The API is consumed by a separate Blazor frontend.
 
-- JWT Authentication
-- Docker support
-- Pagination
-- Sorting
-- Frontend integration
-- Advanced health check reporting
+**Live application:**  
+https://recordshop.nazmulhussain.co.uk
+
+**Frontend repository:**  
+https://github.com/Nazmul5765/record-shop-frontend
 
 ---
 
-# Author
+## Future Improvements
 
-Nazmul Hussain
+Possible future improvements include:
+
+- Authentication and user accounts
+- Pagination for larger record collections
+- Additional sorting and filtering options
+- More detailed health check reporting
+- Expanded automated test coverage
+
+---
+
+## Author
+
+**Nazmul Hussain**
+
+Junior C#/.NET Developer
+
+- Portfolio: https://nazmulhussain.co.uk
+- GitHub: https://github.com/Nazmul5765
+- LinkedIn: https://www.linkedin.com/in/nazmul-hussain/
